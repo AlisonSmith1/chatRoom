@@ -1,12 +1,21 @@
 const express = require("express");
-const http = require("http");
-const { Server } = require("socket.io");
-
 const app = express();
+const http = require("http");
+const cors = require("cors");
+const { Server } = require("socket.io");
 const server = http.createServer(app);
+const passport = require("passport");
 const io = new Server(server, {
-  cors: { origin: "*" }, // 允許前端跨域
+  cors: { origin: "*" },
 });
+
+const userRouter = require("./routes/user");
+
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.use("/user", passport.authenticate("jwt", { session: false }), userRouter);
 
 // 當有使用者連線
 io.on("connection", (socket) => {
@@ -23,5 +32,9 @@ io.on("connection", (socket) => {
 });
 
 server.listen(3000, () => {
-  console.log("Server 啟動在 http://localhost:3000");
+  console.log("Server 啟動在 http://localhost:4000");
+});
+
+app.listen(3000, () => {
+  console.log("伺服器已啟動：http://localhost:3000");
 });
