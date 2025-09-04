@@ -5,17 +5,24 @@ const cors = require("cors");
 const { Server } = require("socket.io");
 const server = http.createServer(app);
 const passport = require("passport");
+require("./config/passport")(passport);
 const io = new Server(server, {
   cors: { origin: "*" },
 });
+const dotenv = require("dotenv");
+dotenv.config();
 
-const userRouter = require("./routes/user");
+const usersRouter = require("./routes/users");
 
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/user", passport.authenticate("jwt", { session: false }), userRouter);
+app.use(
+  "/users",
+  passport.authenticate("jwt", { session: false }),
+  usersRouter
+);
 
 // 當有使用者連線
 io.on("connection", (socket) => {
