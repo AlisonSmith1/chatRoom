@@ -13,15 +13,17 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const usersRouter = require("./routes/users");
+const chatRoomRouter = require("./routes/chatRoom");
 
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.use("/users", usersRouter);
 app.use(
-  "/users",
+  "/chatRoom",
   passport.authenticate("jwt", { session: false }),
-  usersRouter
+  chatRoomRouter
 );
 
 // 當有使用者連線
