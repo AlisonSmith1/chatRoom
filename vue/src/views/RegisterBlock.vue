@@ -1,50 +1,44 @@
 <template>
   <div class="block">
     <h2>註冊</h2>
-    <p>請填寫帳號密碼完成註冊。</p>
-    <div class="form-group">
-      <label>帳號：</label>
-      <input v-model="username" type="text" placeholder="輸入帳號" />
-    </div>
-    <div class="form-group">
-      <label>密碼：</label>
-      <input v-model="password" type="text" placeholder="輸入密碼" />
-    </div>
-    <button class="register-btn" @click="register">註冊帳號</button>
+    <input v-model="username" placeholder="帳號" />
+    <input v-model="password" placeholder="密碼" />
+    <button @click="register">註冊</button>
   </div>
 </template>
+
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useUserStore } from '../stores/user'
 
 const router = useRouter()
-
+const userStore = useUserStore()
 const username = ref('')
 const password = ref('')
-const registerAccount = ref(null)
 
 async function register() {
+  if (!username.value || !password.value) {
+    alert('請輸入帳號與密碼')
+    return
+  }
+
   try {
     const res = await fetch('http://localhost:3000/users/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        username: username.value,
-        password: password.value,
-      }),
+      body: JSON.stringify({ username: username.value, password: password.value }),
     })
     const data = await res.json()
-    registerAccount.value = data
-
     if (res.ok) {
-      router.push('/login')
+      userStore.login(data) // 註冊後自動登入
+      router.push('/')
       alert('註冊成功！')
     } else {
       alert(data.error)
     }
-  } catch (error) {
-    console.error(error)
-    alert('註冊失敗')
+  } catch (err) {
+    console.error(err)
   }
 }
 </script>

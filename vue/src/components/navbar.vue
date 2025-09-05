@@ -1,39 +1,29 @@
+<script setup>
+import { useUserStore } from '../stores/user'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+const userStore = useUserStore()
+
+// 頁面載入時同步 localStorage
+userStore.loadFromStorage()
+
+function logOut() {
+  userStore.logout()
+  router.push('/')
+  alert('已登出')
+}
+</script>
+
 <template>
   <div class="lu">
     <router-link class="po" to="/">首頁</router-link>
-    <router-link class="po" to="/register" v-if="ifRegister">註冊</router-link>
-    <router-link class="po" @click="ifLoginStatus" to="/login">登入</router-link>
-    <router-link class="po" v-if="ifLogin" to="/chat">聊天</router-link>
-    <button class="po" v-if="ifLogin" @click="logOut">登出</button>
+    <router-link class="po" to="/register" v-if="!userStore.isLogin">註冊</router-link>
+    <router-link class="po" to="/login" v-if="!userStore.isLogin">登入</router-link>
+    <router-link class="po" to="/chat" v-if="userStore.isLogin">聊天</router-link>
+    <button class="po" v-if="userStore.isLogin" @click="logOut">登出</button>
   </div>
 </template>
-
-<script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-const router = useRouter()
-const ifRegister = ref(true)
-const ifLogin = ref(false)
-
-onMounted(() => {
-  const account = localStorage.getItem('Account')
-  if (account) {
-    ifLogin.value = true
-    ifRegister.value = false
-  } else {
-    ifLogin.value = false
-    ifRegister.value = true
-  }
-})
-
-function logOut() {
-  localStorage.removeItem('Account')
-  ifLogin.value = false
-  ifRegister.value = true
-  alert('已登出')
-  router.push('/')
-}
-</script>
 
 <style scoped>
 .lu {
