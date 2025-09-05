@@ -31,7 +31,7 @@ async function register() {
     })
     const data = await res.json()
     if (res.ok) {
-      userStore.login(data) // 註冊後自動登入
+      userStore.login(data)
       router.push('/')
       alert('註冊成功！')
     } else {

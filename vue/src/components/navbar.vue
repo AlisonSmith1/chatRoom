@@ -5,7 +5,6 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 const userStore = useUserStore()
 
-// 頁面載入時同步 localStorage
 userStore.loadFromStorage()
 
 function logOut() {

@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 
 export const useUserStore = defineStore('user', {
   state: () => ({
-    account: null, // 存使用者資料
+    account: null,
   }),
   getters: {
     isLogin: (state) => !!state.account,

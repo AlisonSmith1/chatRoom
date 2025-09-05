@@ -1,29 +1,85 @@
 <template>
-  <div class="block">
-    <h2>聊天頁面</h2>
-    <p>這裡放聊天訊息和輸入框。</p>
+  <div class="chat-container">
+    <h2>聊天室</h2>
+    <ul ref="chatBox">
+      <li v-for="(msg, index) in messages" :key="index">{{ msg }}</li>
+    </ul>
+    <input v-model="message" @keyup.enter="sendMessage" placeholder="輸入訊息..." />
+    <button @click="sendMessage">送出</button>
   </div>
 </template>
-<script setup></script>
+
+<script setup>
+import { ref, nextTick, onMounted } from 'vue'
+import { io } from 'socket.io-client'
+
+const messages = ref([])
+const message = ref('')
+const chatBox = ref(null)
+
+// 連線後端 Socket.IO
+const socket = io('http://localhost:3000', {
+  auth: {
+    serverOffset: 0,
+  },
+})
+
+onMounted(() => {
+  // 接收訊息
+  socket.on('chat message', (msg, serverOffset) => {
+    messages.value.push(msg)
+    scrollToBottom()
+    socket.auth.serverOffset = serverOffset
+  })
+})
+
+function sendMessage() {
+  if (message.value.trim() !== '') {
+    socket.emit('chat message', message.value)
+    message.value = ''
+  }
+}
+
+function scrollToBottom() {
+  nextTick(() => {
+    if (chatBox.value) {
+      chatBox.value.scrollTop = chatBox.value.scrollHeight
+    }
+  })
+}
+</script>
+
 <style scoped>
-h2 {
-  color: #42b983;
-  margin: 10px;
-}
-
-p {
-  color: #1f8457;
-  white-space: pre-wrap;
-  word-break: break-word;
-  margin: 10px;
-}
-
-.block {
-  border: #1f8457 1px solid;
-  margin: 10px;
+.chat-container {
+  max-width: 500px;
+  margin: 20px auto;
+  padding: 10px;
+  border: 1px solid #42b983;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+}
+ul {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 10px;
+  flex-grow: 1;
+  overflow-y: auto;
+  max-height: 300px;
+}
+li {
+  padding: 5px;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+input {
+  padding: 5px;
+  margin-bottom: 5px;
+}
+button {
+  padding: 5px;
+  background-color: #42b983;
+  color: white;
+  border: none;
+  cursor: pointer;
 }
 </style>
