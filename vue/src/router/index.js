@@ -1,8 +1,20 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
+import Home from '../views/HomeBlock.vue'
+import Login from '../views/LoginBlock.vue'
+import Register from '../views/RegisterBlock.vue'
+import Chat from '../views/ChatBlock.vue'
+
+const routes = [
+  { path: '/', component: Home },
+  { path: '/login', component: Login },
+  { path: '/register', component: Register },
+  { path: '/chat', component: Chat },
+]
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [],
+  routes,
 })
 
 export default router

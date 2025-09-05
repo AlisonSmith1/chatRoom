@@ -15,16 +15,42 @@
 </template>
 <script setup>
 import { ref } from 'vue'
-const username = ref()
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+const username = ref('')
 const password = ref('')
 
-function login() {
-  if (!username.value || !password.value) {
-    alert('請輸入帳號與密碼')
-    return
+const loginAccount = ref([])
+
+async function login() {
+  try {
+    if (!username.value || !password.value) {
+      alert('請輸入帳號與密碼')
+      return
+    }
+
+    const res = await fetch('http://localhost:3000/users/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: username.value,
+        password: password.value,
+      }),
+    })
+    const data = await res.json()
+    loginAccount.value = data
+
+    if (res.ok) {
+      localStorage.setItem('Account', JSON.stringify(data))
+      router.push('/')
+      alert('登入成功！')
+    } else {
+      alert(data.error)
+    }
+  } catch (error) {
+    console.error(error)
   }
-  // 這裡可以放你的登入邏輯，例如 API 呼叫
-  alert(`登入成功！帳號：${username.value} 密碼：${password.value}`)
 }
 </script>
 <style scoped>

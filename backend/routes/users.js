@@ -31,7 +31,7 @@ router.post("/register", async (req, res) => {
     const values = [username, hashedPassword];
     const result = await pool.query(insertQuery, values);
 
-    return res.json({ msg: "使用者成功註冊", savedUser: result.rows[0] });
+    return res.json({ savedUser: result.rows[0] });
   } catch (e) {
     console.error("註冊或寄信錯誤：", e);
     return res.status(500).json({ error: e.message });

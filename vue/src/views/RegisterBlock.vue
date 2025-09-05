@@ -10,10 +10,45 @@
       <label>密碼：</label>
       <input v-model="password" type="text" placeholder="輸入密碼" />
     </div>
-    <button class="login-btn" @click="login">註冊帳號</button>
+    <button class="register-btn" @click="register">註冊帳號</button>
   </div>
 </template>
-<script setup></script>
+<script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+const username = ref('')
+const password = ref('')
+const registerAccount = ref(null)
+
+async function register() {
+  try {
+    const res = await fetch('http://localhost:3000/users/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: username.value,
+        password: password.value,
+      }),
+    })
+    const data = await res.json()
+    registerAccount.value = data
+
+    if (res.ok) {
+      router.push('/login')
+      alert('註冊成功！')
+    } else {
+      alert(data.error)
+    }
+  } catch (error) {
+    console.error(error)
+    alert('註冊失敗')
+  }
+}
+</script>
+
 <style scoped>
 h2 {
   color: #42b983;
@@ -46,7 +81,7 @@ input {
   border: 1px solid #42b983;
 }
 
-.login-btn {
+.register-btn {
   background-color: #42b983;
   color: white;
   border: none;

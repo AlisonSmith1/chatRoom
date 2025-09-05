@@ -20,8 +20,8 @@
 1. HTTP Route
 
    - POST /login
-     - 驗證帳號密碼
-     - 成功 → 回傳 JWT / 設定 Session
+     - 驗證帳號密碼 → passport-jwt
+     - 成功 → 回傳 JWT
    - GET /account
      - 取得歷史訊息
 
