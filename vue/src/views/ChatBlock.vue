@@ -2,7 +2,9 @@
   <div class="chat-container">
     <h2>聊天室</h2>
     <ul ref="chatBox">
-      <li v-for="(msg, index) in messages" :key="index">{{ msg }}</li>
+      <li v-for="(msg, index) in messages" :key="index">
+        <strong>{{ msg.username }}:</strong> {{ msg.content }}
+      </li>
     </ul>
     <input v-model="message" @keyup.enter="sendMessage" placeholder="輸入訊息..." />
     <button @click="sendMessage">送出</button>
@@ -18,24 +20,28 @@ const message = ref('')
 const chatBox = ref(null)
 
 // 連線後端 Socket.IO
+const accountStr = localStorage.getItem('Account')
+let token = null
+if (accountStr) {
+  token = JSON.parse(accountStr).token
+}
+
 const socket = io('http://localhost:3000', {
-  auth: {
-    serverOffset: 0,
-  },
+  auth: { token },
 })
 
 onMounted(() => {
   // 接收訊息
-  socket.on('chat message', (msg, serverOffset) => {
+  socket.on('chat message', (msg) => {
+    // msg 格式已經是 { id, userId, username, content }
     messages.value.push(msg)
     scrollToBottom()
-    socket.auth.serverOffset = serverOffset
   })
 })
 
 function sendMessage() {
   if (message.value.trim() !== '') {
-    socket.emit('chat message', message.value)
+    socket.emit('chat message', message.value) // 傳純文字就好
     message.value = ''
   }
 }
