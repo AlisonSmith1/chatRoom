@@ -5,7 +5,7 @@
   "main": "backend/server.js",
   "scripts": {
     "start": "node backend/server.js",
-    "postinstall": "cd backend && npm install",
+    "postinstall": "cd backend && npm install && cd ../vue && npm install && npm run build",
     "build-frontend": "cd vue && npm install && npm run build"
   },
   "dependencies": {
