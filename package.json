@@ -1,0 +1,20 @@
+{
+  "name": "chatroom-app",
+  "version": "1.0.0",
+  "description": "\"# chatRoom\"\r 前端 (Vue)\r ────────────────────────────────────",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node backend/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlisonSmith1/chatRoom.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AlisonSmith1/chatRoom/issues"
+  },
+  "homepage": "https://github.com/AlisonSmith1/chatRoom#readme"
+}
