@@ -56,7 +56,7 @@ io.on("connection", async (socket) => {
     );
 
     const messages = result.rows.reverse();
-    console.log(messages);
+
     socket.emit("chat history", messages);
   } catch (err) {
     console.error("載入歷史訊息錯誤:", err.message);
