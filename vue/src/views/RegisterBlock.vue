@@ -16,6 +16,7 @@ const router = useRouter()
 const userStore = useUserStore()
 const username = ref('')
 const password = ref('')
+const API_URL = 'https://chatroom-production-300c.up.railway.app'
 
 async function register() {
   if (!username.value || !password.value) {
@@ -24,7 +25,7 @@ async function register() {
   }
 
   try {
-    const res = await fetch('http://localhost:4000/users/register', {
+    const res = await fetch(`${API_URL}/users/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username: username.value, password: password.value }),

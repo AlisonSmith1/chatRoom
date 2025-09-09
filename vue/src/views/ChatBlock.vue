@@ -21,12 +21,13 @@ const chatBox = ref(null)
 
 // 連線後端 Socket.IO
 const accountStr = localStorage.getItem('Account')
+const API_URL = `https://chatroom-production-300c.up.railway.app`
 let token = null
 if (accountStr) {
   token = JSON.parse(accountStr).token
 }
 
-const socket = io('http://localhost:4000', {
+const socket = io(API_URL, {
   auth: { token },
 })
 

@@ -22,6 +22,7 @@ const userStore = useUserStore()
 const router = useRouter()
 const username = ref('')
 const password = ref('')
+const API_URL = 'https://chatroom-production-300c.up.railway.app'
 
 const loginAccount = ref([])
 
@@ -32,7 +33,7 @@ async function login() {
       return
     }
 
-    const res = await fetch('http://localhost:4000/users/login', {
+    const res = await fetch(`${API_URL}/users/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
