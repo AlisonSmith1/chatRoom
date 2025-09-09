@@ -26,7 +26,7 @@ if (accountStr) {
   token = JSON.parse(accountStr).token
 }
 
-const socket = io('http://localhost:3000', {
+const socket = io('http://localhost:4000', {
   auth: { token },
 })
 
