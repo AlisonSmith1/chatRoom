@@ -9,6 +9,8 @@ dotenv.config();
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const path = require("path");
+const usersRouter = require("./routes/users");
+const chatRoomRoute = require("./routes/chatRoom");
 
 const app = express();
 const server = createServer(app);
@@ -17,16 +19,16 @@ const io = new Server(server, { cors: { origin: "*" } });
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use("/users", require("./routes/users"));
+app.use("/users", usersRouter);
 app.use(
   "/chatRoom",
   passport.authenticate("jwt", { session: false }),
-  require("./routes/chatRoom")
+  chatRoomRoute
 );
 
 app.use(express.static(path.join(__dirname, "../vue/dist")));
 
-app.get("/", (req, res) => {
+app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../vue/dist/index.html"));
 });
 
