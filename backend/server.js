@@ -28,7 +28,7 @@ app.use(
 
 app.use(express.static(path.join(__dirname, "../vue/dist")));
 
-app.get("*", (req, res) => {
+app.get(/^.*$/, (req, res) => {
   res.sendFile(path.join(__dirname, "../vue/dist/index.html"));
 });
 
