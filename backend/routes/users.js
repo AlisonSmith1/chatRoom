@@ -58,7 +58,7 @@ router.post("/login", async (req, res) => {
 
     const token = jwt.sign(
       //（有效負載， secretOrPrivateKey， [選項， 回呼]）
-      { username: user.username },
+      { id: user.id, username: user.username },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );

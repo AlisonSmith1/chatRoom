@@ -32,6 +32,10 @@ const socket = io('http://localhost:3000', {
 
 onMounted(() => {
   // 接收訊息
+  socket.on('chat history', (history) => {
+    messages.value = history
+    scrollToBottom()
+  })
   socket.on('chat message', (msg) => {
     // msg 格式已經是 { id, userId, username, content }
     messages.value.push(msg)
@@ -41,7 +45,7 @@ onMounted(() => {
 
 function sendMessage() {
   if (message.value.trim() !== '') {
-    socket.emit('chat message', message.value) // 傳純文字就好
+    socket.emit('chat message', message.value)
     message.value = ''
   }
 }

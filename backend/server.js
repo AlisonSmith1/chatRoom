@@ -7,7 +7,6 @@ const pool = require("./db");
 const dotenv = require("dotenv");
 dotenv.config();
 const cors = require("cors");
-const { json } = require("node:stream/consumers");
 const jwt = require("jsonwebtoken");
 
 const app = express();
@@ -26,18 +25,18 @@ app.use(
 
 io.use((socket, next) => {
   let token = socket.handshake.auth.token;
-  console.log("收到 token:", token);
 
   if (!token) return next(new Error("No token"));
 
   if (token.startsWith("Bearer ")) {
-    token = token.slice(7); // 只留下真正的 jwt
+    token = token.slice(7);
   }
 
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET);
-    socket.userId = payload.id;
-    socket.username = payload.username;
+
+    socket.data.userId = payload.id;
+    socket.data.username = payload.username;
     next();
   } catch (err) {
     console.error("JWT 驗證錯誤:", err.message);
@@ -47,38 +46,42 @@ io.use((socket, next) => {
 
 io.on("connection", async (socket) => {
   console.log("新使用者連線:", socket.id);
+  try {
+    const result = await pool.query(
+      `SELECT m.id, u.username, m.content
+     FROM messages m
+     JOIN users u ON m.user_id = u.id
+     ORDER BY m.id DESC
+     LIMIT 100`
+    );
 
-  // 讀取歷史訊息
-  // 讀取所有歷史訊息
-  const result = await pool.query(
-    `SELECT m.id, m.user_id, m.content, u.username
-   FROM messages m
-   JOIN users u ON m.user_id = u.id
-   ORDER BY m.id ASC`
-  );
-
-  result.rows.forEach((row) => {
-    socket.emit("chat message", {
-      id: row.id,
-      userId: row.user_id,
-      username: row.username,
-      content: row.content,
-    });
-  });
+    const messages = result.rows.reverse();
+    console.log(messages);
+    socket.emit("chat history", messages);
+  } catch (err) {
+    console.error("載入歷史訊息錯誤:", err.message);
+  }
 
   // 接收訊息
   socket.on("chat message", async (msg) => {
-    const result = await pool.query(
-      "INSERT INTO messages (user_id, content) VALUES ($1, $2) RETURNING id",
-      [socket.userId, msg]
-    );
+    try {
+      const result = await pool.query(
+        `WITH inserted AS (
+     INSERT INTO messages (user_id, content)
+     VALUES ($1, $2)
+     RETURNING id, user_id, content
+   )
+   SELECT i.id, u.username, i.content
+   FROM inserted i
+   JOIN users u ON i.user_id = u.id;`,
+        [socket.data.userId, msg]
+      );
 
-    io.emit("chat message", {
-      id: result.rows[0].id,
-      userId: socket.userId,
-      username: socket.username,
-      content: msg,
-    });
+      io.emit("chat message", result.rows[0]);
+    } catch (err) {
+      console.error("訊息處理錯誤:", err.message);
+      socket.emit("error message", { message: "訊息送出失敗，請稍後再試" });
+    }
   });
 
   socket.on("disconnect", () => {
