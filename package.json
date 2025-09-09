@@ -1,11 +1,23 @@
 {
   "name": "chatroom-app",
   "version": "1.0.0",
-  "description": "\"# chatRoom\"\r 前端 (Vue)\r ────────────────────────────────────",
-  "main": "index.js",
+  "description": "ChatRoom 專案，前後端整合",
+  "main": "backend/server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node backend/server.js"
+    "start": "node backend/server.js",
+    "postinstall": "cd backend && npm install",
+    "build-frontend": "cd vue && npm install && npm run build"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "dotenv": "^17.2.2",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "nodemon": "^3.1.10",
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1",
+    "pg": "^8.16.3",
+    "socket.io": "^4.8.1"
   },
   "repository": {
     "type": "git",
