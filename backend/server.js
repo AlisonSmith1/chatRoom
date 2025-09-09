@@ -31,6 +31,7 @@ app.use(express.static(path.join(__dirname, "../vue/dist")));
 app.get(/^.*$/, (req, res) => {
   res.sendFile(path.join(__dirname, "../vue/dist/index.html"));
 });
+//如果只用/會導向到首頁，無法使用vue-router的其他路由
 
 io.use((socket, next) => {
   let token = socket.handshake.auth.token;
