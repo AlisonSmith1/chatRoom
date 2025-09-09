@@ -1,8 +1,14 @@
 <template>
   <div class="block">
     <h2>註冊</h2>
-    <input v-model="username" placeholder="帳號" />
-    <input v-model="password" placeholder="密碼" />
+
+    <div class="form-group">
+      <label>帳號：</label>
+      <input v-model="username" type="text" placeholder="輸入帳號" />
+    </div>
+    <div class="form-group">
+      <label>密碼：</label> <input v-model="password" type="text" placeholder="輸入密碼" />
+    </div>
     <button @click="register">註冊</button>
   </div>
 </template>
@@ -74,6 +80,10 @@ input {
   padding: 5px 10px;
   border-radius: 5px;
   border: 1px solid #42b983;
+}
+
+.form-group {
+  margin: 10px;
 }
 
 .register-btn {
