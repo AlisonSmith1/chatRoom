@@ -2,14 +2,22 @@
 前端 (Vue)
 ────────────────────────────────────
 
-1. 登入頁
+1. 首頁
+
+   - 開頭介紹
+
+2. 註冊頁
+
+   - 輸入帳號密碼 → POST /register
+
+3. 登入頁
 
    - 輸入帳號密碼 → POST /login
    - 成功後拿到 JWT / Session
 
-2. 聊天頁
+4. 聊天頁
    - 建立 socket.io 連線
-     - io("http://localhost:3000", { auth: { token: JWT } })
+     - io("http://localhost:4000", { auth: { token: JWT } })
    - 顯示訊息列表
    - 送訊息給 server
      ────────────────────────────────────
@@ -37,5 +45,5 @@
 - users
   - id, username, password(hashed)
 - messages
-  - id, senderId, content, timestamp
+  - id, senderId, content, timestamp, room_id
     ────────────────────────────────────

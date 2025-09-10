@@ -25,8 +25,8 @@ const userStore = useUserStore()
 const router = useRouter()
 const username = ref('')
 const password = ref('')
-const API_URL = 'https://chatroom-production-300c.up.railway.app'
-// const API_URL = `http://localhost:4000`
+// const API_URL = 'https://chatroom-production-300c.up.railway.app'
+const API_URL = `http://localhost:4000`
 
 const loginAccount = ref([])
 const errorMessage = ref('')
