@@ -21,7 +21,8 @@ const chatBox = ref(null)
 
 // 連線後端 Socket.IO
 const accountStr = localStorage.getItem('Account')
-const API_URL = `https://chatroom-production-300c.up.railway.app`
+// const API_URL = `https://chatroom-production-300c.up.railway.app`
+const API_URL = `http://localhost:4000`
 let token = null
 if (accountStr) {
   token = JSON.parse(accountStr).token

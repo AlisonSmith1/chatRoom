@@ -1,15 +1,17 @@
 <template>
   <div class="block">
     <h2>註冊</h2>
-
+    <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
     <div class="form-group">
       <label>帳號：</label>
-      <input v-model="username" type="text" placeholder="輸入帳號" />
+      <input v-model="username" type="text" @keyup.enter="register" placeholder="輸入帳號" />
     </div>
     <div class="form-group">
-      <label>密碼：</label> <input v-model="password" type="text" placeholder="輸入密碼" />
+      <label>密碼：</label>
+      <input v-model="password" type="password" @keyup.enter="register" placeholder="輸入密碼" />
     </div>
-    <button @click="register">註冊</button>
+
+    <button class="register-btn" @click="register">註冊</button>
   </div>
 </template>
 
@@ -22,11 +24,18 @@ const router = useRouter()
 const userStore = useUserStore()
 const username = ref('')
 const password = ref('')
-const API_URL = 'https://chatroom-production-300c.up.railway.app'
+// const API_URL = 'https://chatroom-production-300c.up.railway.app'
+const API_URL = `http://localhost:4000`
+const errorMessage = ref('')
 
 async function register() {
   if (!username.value || !password.value) {
-    alert('請輸入帳號與密碼')
+    errorMessage.value = '請輸入帳號與密碼'
+    return
+  }
+
+  if (!res.ok) {
+    errorMessage.value = data.error
     return
   }
 
@@ -96,7 +105,7 @@ input {
   margin-bottom: 10px;
 }
 
-.login-btn:hover {
+.register-btn:hover {
   background-color: #369870;
 }
 </style>

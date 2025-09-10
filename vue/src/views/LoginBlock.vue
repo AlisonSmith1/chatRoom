@@ -1,15 +1,18 @@
 <template>
   <div class="block">
     <h2>登入</h2>
-    <p>請輸入帳號密碼登入系統。</p>
+
+    <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
+
     <div class="form-group">
       <label>帳號：</label>
-      <input v-model="username" type="text" placeholder="輸入帳號" />
+      <input v-model="username" type="text" @keyup.enter="login" placeholder="輸入帳號" />
     </div>
     <div class="form-group">
       <label>密碼：</label>
-      <input v-model="password" type="text" placeholder="輸入密碼" />
+      <input v-model="password" type="password" @keyup.enter="login" placeholder="輸入密碼" />
     </div>
+
     <button class="login-btn" @click="login">登入</button>
   </div>
 </template>
@@ -22,14 +25,21 @@ const userStore = useUserStore()
 const router = useRouter()
 const username = ref('')
 const password = ref('')
-const API_URL = 'https://chatroom-production-300c.up.railway.app'
+// const API_URL = 'https://chatroom-production-300c.up.railway.app'
+const API_URL = `http://localhost:4000`
 
 const loginAccount = ref([])
+const errorMessage = ref('')
 
 async function login() {
   try {
     if (!username.value || !password.value) {
-      alert('請輸入帳號與密碼')
+      errorMessage.value = '請輸入帳號與密碼'
+      return
+    }
+
+    if (!res.ok) {
+      errorMessage.value = data.error
       return
     }
 
