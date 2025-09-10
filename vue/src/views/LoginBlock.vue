@@ -38,11 +38,6 @@ async function login() {
       return
     }
 
-    if (!res.ok) {
-      errorMessage.value = data.error
-      return
-    }
-
     const res = await fetch(`${API_URL}/users/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -53,6 +48,11 @@ async function login() {
     })
     const data = await res.json()
     loginAccount.value = data
+
+    if (!res.ok) {
+      errorMessage.value = data.error
+      return
+    }
 
     if (res.ok) {
       userStore.login(data)

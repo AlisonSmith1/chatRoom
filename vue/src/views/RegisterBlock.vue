@@ -34,11 +34,6 @@ async function register() {
     return
   }
 
-  if (!res.ok) {
-    errorMessage.value = data.error
-    return
-  }
-
   try {
     const res = await fetch(`${API_URL}/users/register`, {
       method: 'POST',
@@ -46,6 +41,11 @@ async function register() {
       body: JSON.stringify({ username: username.value, password: password.value }),
     })
     const data = await res.json()
+
+    if (!res.ok) {
+      errorMessage.value = data.error
+      return
+    }
     if (res.ok) {
       userStore.login(data)
       router.push('/')
