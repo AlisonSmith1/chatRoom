@@ -14,14 +14,14 @@
 <script setup>
 import { ref, nextTick, onMounted, watch } from 'vue'
 import { io } from 'socket.io-client'
+import API_URL from '../router/api_url'
 
 const messages = ref([])
 const message = ref('')
 const chatBox = ref(null)
 
 const accountStr = localStorage.getItem('Account')
-const API_URL = 'https://chatroom-production-300c.up.railway.app'
-// const API_URL = `http://localhost:4000`
+
 let token = null
 if (accountStr) token = JSON.parse(accountStr).token
 

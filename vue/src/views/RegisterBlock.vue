@@ -19,13 +19,12 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '../stores/user'
+import API_URL from '../router/api_url'
 
 const router = useRouter()
 const userStore = useUserStore()
 const username = ref('')
 const password = ref('')
-const API_URL = 'https://chatroom-production-300c.up.railway.app'
-// const API_URL = `http://localhost:4000`
 const errorMessage = ref('')
 
 async function register() {
