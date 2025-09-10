@@ -55,7 +55,9 @@ watch(
   () => props.roomId,
   (newRoomId) => {
     if (!newRoomId) return
+    socket.off('chat message') // 清掉舊監聽
     socket.emit('join room', newRoomId)
+    socket.emit('get history', newRoomId)
     messages.value = []
   },
 )
