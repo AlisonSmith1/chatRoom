@@ -1,6 +1,6 @@
 <template>
   <div class="navbar">
-    <p>公開</p>
+    <!-- <p>公開</p> -->
     <ul>
       <li
         v-for="room in rooms"
@@ -11,11 +11,11 @@
         {{ room.name }}
       </li>
     </ul>
-    <p>私人</p>
+    <!-- <p>私人</p>
     <button>新增聊天室</button>
     <ul>
       <li>私人聊天室2</li>
-    </ul>
+    </ul> -->
   </div>
 </template>
 
