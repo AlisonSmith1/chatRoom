@@ -55,45 +55,47 @@ io.use((socket, next) => {
 });
 
 io.on("connection", async (socket) => {
-  console.log("新使用者連線:", socket.id);
-  try {
-    const result = await pool.query(
-      `SELECT m.id, u.username, m.content
-     FROM messages m
-     JOIN users u ON m.user_id = u.id
-     ORDER BY m.id DESC
-     LIMIT 100`
-    );
+  socket.on("join room", async (roomId) => {
+    socket.join(roomId); // 加入房間
 
-    const messages = result.rows.reverse();
+    try {
+      const result = await pool.query(
+        `SELECT m.id, u.username, m.content
+         FROM messages m
+         JOIN users u ON m.user_id = u.id
+         WHERE m.room_id = $1
+         ORDER BY m.id ASC
+         LIMIT 100`,
+        [roomId]
+      );
 
-    socket.emit("chat history", messages);
-  } catch (err) {
-    console.error("載入歷史訊息錯誤:", err.message);
-  }
-
-  // 接收訊息
-  socket.on("chat message", async (msg) => {
+      const messages = result.rows;
+      socket.emit("chat history", messages); // 只發給這個 socket
+    } catch (err) {
+      console.error("載入歷史訊息錯誤:", err.message);
+    }
+  });
+  socket.on("chat message", async ({ content, roomId }) => {
     try {
       const result = await pool.query(
         `WITH inserted AS (
-     INSERT INTO messages (user_id, content)
-     VALUES ($1, $2)
-     RETURNING id, user_id, content
-   )
-   SELECT i.id, u.username, i.content
-   FROM inserted i
-   JOIN users u ON i.user_id = u.id;`,
-        [socket.data.userId, msg]
+           INSERT INTO messages (user_id, content, room_id)
+           VALUES ($1, $2, $3)
+           RETURNING id, user_id, content
+         )
+         SELECT i.id, u.username, i.content
+         FROM inserted i
+         JOIN users u ON i.user_id = u.id;`,
+        [socket.data.userId, content, roomId]
       );
 
-      io.emit("chat message", result.rows[0]);
+      // 廣播給同房間的人
+      io.to(roomId).emit("chat message", result.rows[0]);
     } catch (err) {
       console.error("訊息處理錯誤:", err.message);
       socket.emit("error message", { message: "訊息送出失敗，請稍後再試" });
     }
   });
-
   socket.on("disconnect", () => {
     console.log("使用者斷線:", socket.id);
   });
