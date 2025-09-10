@@ -21,22 +21,18 @@ const message = ref('')
 const chatBox = ref(null)
 
 const accountStr = localStorage.getItem('Account')
-
 let token = null
 if (accountStr) token = JSON.parse(accountStr).token
 
 const socket = io(API_URL, { auth: { token } })
 
-// 接收父元件傳入的房間 id
 const props = defineProps({
   roomId: Number,
 })
 
-// 初次加入房間，抓歷史訊息
 onMounted(() => {
   if (props.roomId) {
     socket.emit('join room', props.roomId)
-    // 主動請求歷史訊息
     socket.emit('get history', props.roomId)
   }
 
@@ -44,25 +40,46 @@ onMounted(() => {
     messages.value = history
     scrollToBottom()
   })
+
   socket.on('chat message', (msg) => {
     messages.value.push(msg)
     scrollToBottom()
   })
 })
 
-// 當房間改變時
 watch(
   () => props.roomId,
   (newRoomId) => {
     if (!newRoomId) return
+
+    // 清掉舊監聽，避免訊息重複
+    socket.off('chat message')
+
+    // 加入新房間並請求歷史訊息
     socket.emit('join room', newRoomId)
+    socket.emit('get history', newRoomId)
+
+    // 清空舊訊息並滾動
     messages.value = []
+    scrollToBottom()
+
+    // 重新監聽新的房間訊息
+    socket.on('chat message', (msg) => {
+      messages.value.push(msg)
+      scrollToBottom()
+    })
   },
 )
 
 function sendMessage() {
   if (!message.value.trim()) return
-  socket.emit('chat message', { content: message.value, roomId: props.roomId })
+  socket.emit('chat message', { content: message.value, roomId: props.roomId }, (ack) => {
+    if (ack?.status === 'ok') {
+      console.log('送出成功')
+    } else {
+      console.error('送出失敗', ack)
+    }
+  })
   message.value = ''
 }
 
