@@ -4,6 +4,37 @@
     <p>
       {{ msg }}
     </p>
+    <table>
+      <thead>
+        <tr>
+          <th>組別</th>
+          <th style="width: 150px">帳號</th>
+          <th style="width: 150px">密碼</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>第一組</td>
+          <td>8888</td>
+          <td>8888</td>
+        </tr>
+        <tr>
+          <td>第二組</td>
+          <td>1111</td>
+          <td>1111</td>
+        </tr>
+        <tr>
+          <td>第三組</td>
+          <td>2222</td>
+          <td>2222</td>
+        </tr>
+        <tr>
+          <td>第四組</td>
+          <td>3333</td>
+          <td>3333</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </template>
 
@@ -24,6 +55,23 @@ p {
   white-space: pre-wrap;
   word-break: break-word;
   margin: 10px;
+}
+
+table {
+  border-collapse: collapse;
+  width: 50%;
+  margin: 20px auto;
+}
+
+th,
+td {
+  border: 1px solid #1f8457;
+  padding: 8px 20px; /* 水平 padding 加大 */
+  text-align: center;
+}
+
+th {
+  background-color: #3bd48f;
 }
 
 .lu {

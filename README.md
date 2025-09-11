@@ -43,7 +43,11 @@
 ────────────────────────────────────
 
 - users
-  - id, username, password(hashed)
+  - id, username, password(hashed), (timestamp)
 - messages
-  - id, senderId, content, timestamp, room_id
+  - id, content, timestamp, room_id,( user_id)
+- chat_rooms
+  - id, name, is_private, timestamp
+- room_members
+  - id, room_id, user_id, joined_at
     ────────────────────────────────────

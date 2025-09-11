@@ -11,11 +11,6 @@
         {{ room.name }}
       </li>
     </ul>
-    <!-- <p>私人</p>
-    <button>新增聊天室</button>
-    <ul>
-      <li>私人聊天室2</li>
-    </ul> -->
   </div>
 </template>
 
@@ -27,9 +22,9 @@ const props = defineProps({
 })
 
 const rooms = ref([
-  { id: 1, name: 'General' },
-  { id: 2, name: 'Random' },
-  { id: 3, name: 'Tech' },
+  { id: 1, name: 'General-1' },
+  { id: 2, name: 'General-2' },
+  { id: 3, name: 'General-3' },
 ])
 </script>
 

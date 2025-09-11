@@ -1,13 +1,28 @@
 <template>
   <div class="chat-container">
-    <h2>聊天室</h2>
+    <h2>{{ isPrivate ? '私人聊天室' : '聊天室' }}</h2>
+
+    <button
+      v-if="!isPrivate"
+      @click="findRandomChat"
+      :disabled="roomId === null && messages[0]?.username === '系統'"
+    >
+      隨機一對一聊天
+    </button>
+
     <ul ref="chatBox">
       <li v-for="(msg, index) in messages" :key="index">
         <strong>{{ msg.username }}:</strong> {{ msg.content }}
       </li>
     </ul>
-    <input v-model="message" @keyup.enter="sendMessage" placeholder="輸入訊息..." />
-    <button @click="sendMessage">送出</button>
+
+    <input
+      v-model="message"
+      @keyup.enter="sendMessage"
+      placeholder="輸入訊息..."
+      :disabled="!roomId"
+    />
+    <button @click="sendMessage" :disabled="!roomId">送出</button>
   </div>
 </template>
 
@@ -19,75 +34,88 @@ import API_URL from '../router/api_url'
 const messages = ref([])
 const message = ref('')
 const chatBox = ref(null)
+const roomId = ref(null)
+const isPrivate = ref(false)
 
 const accountStr = localStorage.getItem('Account')
-let token = null
-if (accountStr) token = JSON.parse(accountStr).token
-
+let token = accountStr ? JSON.parse(accountStr).token : null
 const socket = io(API_URL, { auth: { token } })
 
 const props = defineProps({
   roomId: Number,
+  isPrivate: Boolean,
 })
 
-onMounted(() => {
-  if (props.roomId) {
-    socket.emit('join room', props.roomId)
-    socket.emit('get history', props.roomId)
-  }
+// 處理訊息
+function handleMessage(msg) {
+  messages.value.push(msg)
+  scrollToBottom()
+}
 
-  socket.on('chat history', (history) => {
-    messages.value = history
-    scrollToBottom()
-  })
+// 加入房間
+function joinRoom(id) {
+  if (!id) return
+  roomId.value = id
+  messages.value = []
+  scrollToBottom()
+  socket.emit('join room', id)
+}
 
-  socket.on('chat message', (msg) => {
-    messages.value.push(msg)
-    scrollToBottom()
-  })
-})
-
-watch(
-  () => props.roomId,
-  (newRoomId) => {
-    if (!newRoomId) return
-
-    // 清掉舊監聽，避免訊息重複
-    socket.off('chat message')
-
-    // 加入新房間並請求歷史訊息
-    socket.emit('join room', newRoomId)
-    socket.emit('get history', newRoomId)
-
-    // 清空舊訊息並滾動
-    messages.value = []
-    scrollToBottom()
-
-    // 重新監聽新的房間訊息
-    socket.on('chat message', (msg) => {
-      messages.value.push(msg)
-      scrollToBottom()
-    })
-  },
-)
-
+// 送訊息
 function sendMessage() {
-  if (!message.value.trim()) return
-  socket.emit('chat message', { content: message.value, roomId: props.roomId }, (ack) => {
-    if (ack?.status === 'ok') {
-      console.log('送出成功')
-    } else {
-      console.error('送出失敗', ack)
-    }
+  if (!message.value.trim() || !roomId.value) return
+
+  const event = isPrivate.value ? 'private message' : 'chat message'
+  socket.emit(event, { roomId: roomId.value, content: message.value }, (ack) => {
+    if (ack?.status === 'ok') console.log(`${isPrivate.value ? '私訊' : '訊息'}送出成功`)
   })
   message.value = ''
 }
 
+// 滾動到底
 function scrollToBottom() {
   nextTick(() => {
     if (chatBox.value) chatBox.value.scrollTop = chatBox.value.scrollHeight
   })
 }
+
+// 隨機配對
+function findRandomChat() {
+  socket.emit('find random chat')
+  messages.value = [{ username: '系統', content: '正在等待配對...' }]
+  roomId.value = null
+}
+
+onMounted(() => {
+  if (props.roomId) joinRoom(props.roomId)
+  if (props.isPrivate) isPrivate.value = props.isPrivate
+
+  socket.on('chat message', handleMessage)
+  socket.on('private message', handleMessage)
+  socket.on('chat history', (history) => {
+    messages.value = history
+    scrollToBottom()
+  })
+  socket.on('waiting', () => {
+    messages.value = [{ username: '系統', content: '正在等待配對...' }]
+    roomId.value = null
+  })
+  socket.on('matched', ({ roomId: privateRoomId }) => {
+    roomId.value = privateRoomId
+    isPrivate.value = true
+    messages.value = []
+    scrollToBottom()
+    console.log('配對成功，房間ID:', privateRoomId)
+  })
+})
+
+// 監聽 props 更新
+watch(
+  () => props.roomId,
+  (newRoomId) => {
+    if (newRoomId && newRoomId !== roomId.value) joinRoom(newRoomId)
+  },
+)
 </script>
 
 <style scoped>
@@ -118,9 +146,14 @@ input {
 }
 button {
   padding: 5px;
+  margin-bottom: 5px;
   background-color: #42b983;
   color: white;
   border: none;
   cursor: pointer;
+}
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
 }
 </style>

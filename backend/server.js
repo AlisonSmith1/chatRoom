@@ -31,20 +31,17 @@ app.use(express.static(path.join(__dirname, "../vue/dist")));
 app.get(/^.*$/, (req, res) => {
   res.sendFile(path.join(__dirname, "../vue/dist/index.html"));
 });
-//如果只用/會導向到首頁，無法使用vue-router的其他路由
 
+// JWT 驗證
 io.use((socket, next) => {
   let token = socket.handshake.auth.token;
 
   if (!token) return next(new Error("No token"));
 
-  if (token.startsWith("Bearer ")) {
-    token = token.slice(7);
-  }
+  if (token.startsWith("Bearer ")) token = token.slice(7);
 
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET);
-
     socket.data.userId = payload.id;
     socket.data.username = payload.username;
     next();
@@ -54,9 +51,15 @@ io.use((socket, next) => {
   }
 });
 
+// 等待隨機配對的用戶
+const waitingQueue = [];
+
 io.on("connection", async (socket) => {
+  console.log("使用者連線:", socket.id);
+
+  // 加入一般聊天室房間
   socket.on("join room", async (roomId) => {
-    socket.join(roomId); // 加入房間
+    socket.join(roomId);
 
     try {
       const result = await pool.query(
@@ -69,13 +72,14 @@ io.on("connection", async (socket) => {
         [roomId]
       );
 
-      const messages = result.rows;
-      socket.emit("chat history", messages); // 只發給這個 socket
+      socket.emit("chat history", result.rows);
     } catch (err) {
       console.error("載入歷史訊息錯誤:", err.message);
     }
   });
-  socket.on("chat message", async ({ content, roomId }) => {
+
+  // 一般聊天室訊息
+  socket.on("chat message", async ({ content, roomId }, callback) => {
     try {
       const result = await pool.query(
         `WITH inserted AS (
@@ -89,14 +93,48 @@ io.on("connection", async (socket) => {
         [socket.data.userId, content, roomId]
       );
 
-      // 廣播給同房間的人
-      io.to(roomId).emit("chat message", result.rows[0]);
+      const msg = result.rows[0];
+      io.to(roomId).emit("chat message", msg);
+      if (callback) callback({ status: "ok" });
     } catch (err) {
       console.error("訊息處理錯誤:", err.message);
+      if (callback)
+        callback({ status: "error", message: "訊息送出失敗，請稍後再試" });
       socket.emit("error message", { message: "訊息送出失敗，請稍後再試" });
     }
   });
+
+  // 隨機一對一配對
+  socket.on("find random chat", () => {
+    if (waitingQueue.length > 0) {
+      const partnerSocket = waitingQueue.shift();
+      const roomId = `private_${socket.id}_${partnerSocket.id}`;
+
+      socket.join(roomId);
+      partnerSocket.join(roomId);
+
+      // 通知兩個使用者配對成功
+      socket.emit("matched", { roomId });
+      partnerSocket.emit("matched", { roomId });
+    } else {
+      waitingQueue.push(socket);
+      socket.emit("waiting"); // 告訴前端正在等待
+    }
+  });
+
+  // 私人訊息
+  socket.on("private message", async ({ roomId, content }, callback) => {
+    io.to(roomId).emit("private message", {
+      username: socket.data.username,
+      content,
+    });
+    if (callback) callback({ status: "ok" });
+  });
+
+  // 使用者斷線
   socket.on("disconnect", () => {
+    const index = waitingQueue.indexOf(socket);
+    if (index !== -1) waitingQueue.splice(index, 1);
     console.log("使用者斷線:", socket.id);
   });
 });
