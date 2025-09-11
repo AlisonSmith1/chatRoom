@@ -45,9 +45,9 @@
 - users
   - id, username, password(hashed), (timestamp)
 - messages
-  - id, content, timestamp, room_id,( user_id)
+  - id, content, timestamp, room_id, user_id
 - chat_rooms
-  - id, name, is_private, timestamp
+  - id, name, type, timestamp
 - room_members
   - id, room_id, user_id, joined_at
     ────────────────────────────────────

@@ -81,15 +81,22 @@ io.on("connection", async (socket) => {
   // 一般聊天室訊息
   socket.on("chat message", async ({ content, roomId }, callback) => {
     try {
+      await pool.query(
+        `INSERT INTO chat_rooms (id, name)
+       VALUES ($1, $2)
+       ON CONFLICT (id) DO NOTHING`,
+        [roomId, `Room ${roomId}`]
+      );
+
       const result = await pool.query(
         `WITH inserted AS (
-           INSERT INTO messages (user_id, content, room_id)
-           VALUES ($1, $2, $3)
-           RETURNING id, user_id, content
-         )
-         SELECT i.id, u.username, i.content
-         FROM inserted i
-         JOIN users u ON i.user_id = u.id;`,
+         INSERT INTO messages (user_id, content, room_id)
+         VALUES ($1, $2, $3)
+         RETURNING id, user_id, content
+       )
+       SELECT i.id, u.username, i.content
+       FROM inserted i
+       JOIN users u ON i.user_id = u.id;`,
         [socket.data.userId, content, roomId]
       );
 
@@ -113,12 +120,11 @@ io.on("connection", async (socket) => {
       socket.join(roomId);
       partnerSocket.join(roomId);
 
-      // 通知兩個使用者配對成功
       socket.emit("matched", { roomId });
       partnerSocket.emit("matched", { roomId });
     } else {
       waitingQueue.push(socket);
-      socket.emit("waiting"); // 告訴前端正在等待
+      socket.emit("waiting");
     }
   });
 
@@ -131,7 +137,6 @@ io.on("connection", async (socket) => {
     if (callback) callback({ status: "ok" });
   });
 
-  // 使用者斷線
   socket.on("disconnect", () => {
     const index = waitingQueue.indexOf(socket);
     if (index !== -1) waitingQueue.splice(index, 1);
