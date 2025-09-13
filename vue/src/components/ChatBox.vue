@@ -30,6 +30,7 @@ const props = defineProps({
 })
 
 const chatBox = ref(null)
+const message = ref('')
 
 function scrollToBottom() {
   nextTick(() => {
@@ -37,11 +38,16 @@ function scrollToBottom() {
   })
 }
 
+function clearInput() {
+  message.value = ''
+}
+
 // 監聽 messages 改變自動滾動
 watch(
   () => props.messages,
   () => {
     scrollToBottom()
+    clearInput()
   },
   { deep: true },
 )

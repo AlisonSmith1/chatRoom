@@ -138,7 +138,7 @@ io.on("connection", async (socket) => {
     if (callback) callback({ status: "ok" });
   });
 
-  socket.on("disconnect", () => {
+  socket.on("disconnect", (roomId) => {
     const index = waitingQueue.indexOf(socket);
     if (index !== -1) waitingQueue.splice(index, 1);
     console.log("使用者斷線:", socket.id);

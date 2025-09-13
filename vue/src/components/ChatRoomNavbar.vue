@@ -12,7 +12,7 @@
       </li>
     </ul>
 
-    <button @click="$emit('find-random-chat')" :disabled="roomId">隨機一對一聊天</button>
+    <button @click="$emit('find-random-chat')" :disabled="!props.roomId">隨機一對一聊天</button>
   </div>
 </template>
 
@@ -21,6 +21,7 @@ import { ref } from 'vue'
 
 const props = defineProps({
   selectedRoom: Number,
+  roomId: Number,
 })
 
 const rooms = ref([

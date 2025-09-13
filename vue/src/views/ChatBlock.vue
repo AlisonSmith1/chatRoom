@@ -5,6 +5,7 @@
       :selectedRoom="selectedRoom"
       @select-room="selectedRoom = $event"
       @find-random-chat="findRandomChat"
+      :roomId="roomId"
     />
     <ChatBox
       :messages="messages"
@@ -42,9 +43,6 @@ function joinRoom(id) {
   if (!id || roomId.value === id) return
   roomId.value = id
   messages.value = []
-  if (isPrivate.value) {
-    isPrivate.value = false
-  }
   socket.emit('join room', id)
 }
 
@@ -68,13 +66,13 @@ function findRandomChat() {
 
 onMounted(() => {
   if (selectedRoom.value) joinRoom(selectedRoom.value)
-  if (isPrivate) isPrivate.value = isPrivate
+  isPrivate.value = false
 
-  socket.on('chat message', handleMessage, console.log('收到一般訊息'))
-  socket.on('private message', handleMessage, console.log('收到私訊'))
+  socket.on('chat message', handleMessage)
+  socket.on('private message', handleMessage)
+
   socket.on('chat history', (history) => {
     messages.value = history
-
     console.log('歷史訊息載入完成')
   })
   socket.on('waiting', () => {
@@ -89,6 +87,10 @@ onMounted(() => {
 
     console.log('配對成功，房間ID:', privateRoomId)
   })
+
+  if (isPrivate.value) {
+    isPrivate.value = false
+  }
 })
 
 // 監聽 props 更新
