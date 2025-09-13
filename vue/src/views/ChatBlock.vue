@@ -42,7 +42,9 @@ function joinRoom(id) {
   if (!id || roomId.value === id) return
   roomId.value = id
   messages.value = []
-
+  if (isPrivate.value) {
+    isPrivate.value = false
+  }
   socket.emit('join room', id)
 }
 
