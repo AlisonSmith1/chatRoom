@@ -11,6 +11,8 @@
         {{ room.name }}
       </li>
     </ul>
+
+    <button @click="$emit('find-random-chat')" :disabled="roomId">隨機一對一聊天</button>
   </div>
 </template>
 

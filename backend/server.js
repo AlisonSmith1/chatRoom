@@ -80,6 +80,7 @@ io.on("connection", async (socket) => {
 
   // 一般聊天室訊息
   socket.on("chat message", async ({ content, roomId }, callback) => {
+    console.log(roomId);
     try {
       await pool.query(
         `INSERT INTO chat_rooms (id, name)
