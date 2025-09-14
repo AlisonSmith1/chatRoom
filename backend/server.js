@@ -38,10 +38,11 @@ io.use((socket, next) => {
 
   if (!token) return next(new Error("No token"));
 
-  if (token.startsWith("Bearer ")) token = token.slice(7);
-
   try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    const payload = jwt.verify(
+      token.replace(/^Bearer\s+/i, ""),
+      process.env.JWT_SECRET
+    );
     socket.data.userId = payload.id;
     socket.data.username = payload.username;
     next();

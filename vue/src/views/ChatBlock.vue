@@ -83,11 +83,6 @@ onMounted(async () => {
     }
     socket = io(API_URL, { auth: { token: token.replace('Bearer ', '') } })
 
-    socket.on('connect_error', (err) => {
-      console.error('Socket 連線錯誤:', err.message)
-      window.location.href = '/login'
-    })
-
     if (selectedRoom.value) joinRoom(selectedRoom.value)
     isPrivate.value = false
 
