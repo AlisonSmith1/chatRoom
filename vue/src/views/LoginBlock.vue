@@ -3,16 +3,16 @@
     <h2>登入</h2>
 
     <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
-
-    <div class="form-group">
-      <label>帳號：</label>
-      <input v-model="username" type="text" @keyup.enter="login" placeholder="輸入帳號" />
-    </div>
-    <div class="form-group">
-      <label>密碼：</label>
-      <input v-model="password" type="password" @keyup.enter="login" placeholder="輸入密碼" />
-    </div>
-
+    <form>
+      <div class="form-group">
+        <label>帳號：</label>
+        <input v-model="username" type="text" @keyup.enter="login" placeholder="輸入帳號" />
+      </div>
+      <div class="form-group">
+        <label>密碼：</label>
+        <input v-model="password" type="password" @keyup.enter="login" placeholder="輸入密碼" />
+      </div>
+    </form>
     <button class="login-btn" @click="login">登入</button>
   </div>
 </template>
