@@ -25,14 +25,9 @@ import API_URL from '../router/api_url'
 
 const selectedRoom = ref(1)
 const messages = ref([])
-
 const roomId = ref(null)
 const isPrivate = ref(false)
-
-const accountStr = localStorage.getItem('Account')
-let token = accountStr ? JSON.parse(accountStr).token : null
-const socket = io(API_URL, { auth: { token } })
-
+let socket = null
 // 處理訊息
 function handleMessage(msg) {
   messages.value.push(msg)
@@ -64,32 +59,59 @@ function findRandomChat() {
   roomId.value = null
 }
 
-onMounted(() => {
-  if (selectedRoom.value) joinRoom(selectedRoom.value)
-  isPrivate.value = false
+onMounted(async () => {
+  const accountStr = localStorage.getItem('Account')
+  let token = accountStr ? JSON.parse(accountStr).token : null
+  socket = io(API_URL, { auth: { token } })
+  console.log('456', token)
+  if (!token) {
+    window.location.href = '/login'
+    return
+  }
 
-  socket.on('chat message', handleMessage)
-  socket.on('private message', handleMessage)
+  try {
+    const res = await fetch(`${API_URL}/chat`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: token,
+      },
+    })
+    console.log('fetch response:', res)
 
-  socket.on('chat history', (history) => {
-    messages.value = history
-    console.log('歷史訊息載入完成')
-  })
-  socket.on('waiting', () => {
-    messages.value = [{ username: '系統', content: '正在等待配對...' }]
-    roomId.value = null
-    console.log('正在等待配對...')
-  })
-  socket.on('matched', ({ roomId: privateRoomId }) => {
-    roomId.value = privateRoomId
-    isPrivate.value = true
-    messages.value = []
+    if (!res.ok) {
+      window.location.href = '/login'
+      return
+    }
 
-    console.log('配對成功，房間ID:', privateRoomId)
-  })
-
-  if (isPrivate.value) {
+    if (selectedRoom.value) joinRoom(selectedRoom.value)
     isPrivate.value = false
+
+    socket.on('chat message', handleMessage)
+    socket.on('private message', handleMessage)
+
+    socket.on('chat history', (history) => {
+      messages.value = history
+      console.log('歷史訊息載入完成')
+    })
+    socket.on('waiting', () => {
+      messages.value = [{ username: '系統', content: '正在等待配對...' }]
+      roomId.value = null
+      console.log('正在等待配對...')
+    })
+    socket.on('matched', ({ roomId: privateRoomId }) => {
+      roomId.value = privateRoomId
+      isPrivate.value = true
+      messages.value = []
+
+      console.log('配對成功，房間ID:', privateRoomId)
+    })
+
+    if (isPrivate.value) {
+      isPrivate.value = false
+    }
+  } catch (err) {
+    console.error(err)
+    // window.location.href = '/login'
   }
 })
 

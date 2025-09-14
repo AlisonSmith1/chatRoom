@@ -10,7 +10,7 @@ const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const path = require("path");
 const usersRouter = require("./routes/users");
-const chatRoomRoute = require("./routes/chatRoom");
+const chatRoomRouter = require("./routes/chatRoom");
 
 const app = express();
 const server = createServer(app);
@@ -23,7 +23,7 @@ app.use("/users", usersRouter);
 app.use(
   "/chat",
   passport.authenticate("jwt", { session: false }),
-  chatRoomRoute
+  chatRoomRouter
 );
 
 app.use(express.static(path.join(__dirname, "../vue/dist")));
