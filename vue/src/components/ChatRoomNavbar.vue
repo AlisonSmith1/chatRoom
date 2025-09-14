@@ -1,6 +1,7 @@
 <template>
   <div class="navbar">
-    <!-- <p>公開</p> -->
+    <button @click="$emit('find-random-chat')" :disabled="!props.roomId">隨機配對</button>
+
     <ul>
       <li
         v-for="room in rooms"
@@ -11,8 +12,6 @@
         {{ room.name }}
       </li>
     </ul>
-
-    <button @click="$emit('find-random-chat')" :disabled="!props.roomId">隨機一對一聊天</button>
   </div>
 </template>
 
@@ -44,8 +43,33 @@ li {
   padding: 10px;
   cursor: pointer;
 }
+
+button {
+  margin-top: 20px;
+  padding: 10px;
+  width: 100%;
+  background-color: none;
+  border: none;
+  cursor: pointer;
+}
+
 .active {
   background-color: #42b983;
   color: white;
+}
+
+@media screen and (max-width: 600px) {
+  .navbar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #ccc;
+    display: flex;
+    flex-direction: column;
+  }
+  ul {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
 }
 </style>

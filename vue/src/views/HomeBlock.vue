@@ -7,7 +7,7 @@
     <table>
       <thead>
         <tr>
-          <th>組別</th>
+          <th style="width: 150px">組別</th>
           <th style="width: 150px">帳號</th>
           <th style="width: 150px">密碼</th>
         </tr>
@@ -96,5 +96,12 @@ th {
 
 .po:hover {
   background-color: #369870;
+}
+
+@media screen and (max-width: 600px) {
+  table {
+    width: 100%;
+    border-radius: 10px;
+  }
 }
 </style>

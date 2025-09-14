@@ -110,4 +110,14 @@ input {
 .login-btn:hover {
   background-color: #369870;
 }
+
+@media screen and (max-width: 600px) {
+  h2 {
+    display: none;
+  }
+  .block {
+    border: none;
+    margin: 10px;
+  }
+}
 </style>

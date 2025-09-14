@@ -42,7 +42,6 @@ function clearInput() {
   message.value = ''
 }
 
-// 監聽 messages 改變自動滾動
 watch(
   () => props.messages,
   () => {
@@ -90,5 +89,17 @@ button {
 button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
+}
+
+@media screen and (max-width: 600px) {
+  h2 {
+    display: none;
+  }
+  .chat-container {
+    width: auto;
+    margin: 0px;
+    padding: 0px;
+    border: none;
+  }
 }
 </style>
