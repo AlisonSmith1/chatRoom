@@ -28,6 +28,15 @@ const messages = ref([])
 const roomId = ref(null)
 const isPrivate = ref(false)
 let socket = null
+
+const accountStr = localStorage.getItem('Account')
+let token = accountStr ? JSON.parse(accountStr).token : null
+
+if (!token) {
+  window.location.href = '/login'
+  return
+}
+
 // 處理訊息
 function handleMessage(msg) {
   messages.value.push(msg)
