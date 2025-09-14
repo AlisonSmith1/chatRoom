@@ -21,7 +21,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/users", usersRouter);
 app.use(
-  "/chatRoom",
+  "/chat",
   passport.authenticate("jwt", { session: false }),
   chatRoomRoute
 );
