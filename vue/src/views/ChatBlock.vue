@@ -62,8 +62,7 @@ function findRandomChat() {
 onMounted(async () => {
   const accountStr = localStorage.getItem('Account')
   let token = accountStr ? JSON.parse(accountStr).token : null
-  socket = io(API_URL, { auth: { token } })
-  console.log('456', token)
+
   if (!token) {
     window.location.href = '/login'
     return
@@ -82,7 +81,7 @@ onMounted(async () => {
       window.location.href = '/login'
       return
     }
-
+    socket = io(API_URL, { auth: { token } })
     if (selectedRoom.value) joinRoom(selectedRoom.value)
     isPrivate.value = false
 
@@ -111,7 +110,7 @@ onMounted(async () => {
     }
   } catch (err) {
     console.error(err)
-    // window.location.href = '/login'
+    window.location.href = '/login'
   }
 })
 
