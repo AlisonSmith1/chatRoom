@@ -80,7 +80,7 @@ onMounted(async () => {
       window.location.href = '/login'
       return
     }
-    socket = io(API_URL, { auth: { token: token.replace('Bearer ', '') } })
+    socket = io(API_URL, { auth: { token: token } })
 
     if (selectedRoom.value) joinRoom(selectedRoom.value)
     isPrivate.value = false
