@@ -19,7 +19,7 @@
 <script setup>
 import ChatRoomNavbar from '@/components/ChatRoomNavbar.vue'
 import ChatBox from '@/components/ChatBox.vue'
-import { ref, nextTick, onMounted, watch } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { io } from 'socket.io-client'
 import API_URL from '../router/api_url'
 
@@ -28,14 +28,6 @@ const messages = ref([])
 const roomId = ref(null)
 const isPrivate = ref(false)
 let socket = null
-
-const accountStr = localStorage.getItem('Account')
-let token = accountStr ? JSON.parse(accountStr).token : null
-
-if (!token) {
-  window.location.href = '/login'
-  return
-}
 
 // 處理訊息
 function handleMessage(msg) {
