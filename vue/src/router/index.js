@@ -16,20 +16,20 @@ const routes = [
   },
 ]
 
+const router = createRouter({
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes,
+})
+
 router.beforeEach((to, from, next) => {
   const accountStr = localStorage.getItem('Account')
   const token = accountStr ? JSON.parse(accountStr).token : null
 
   if (to.meta.requiresAuth && !token) {
-    next('/login') // 沒 token 就導去登入
+    next('/login')
   } else {
-    next() // 有 token 或不需要驗證就放行
+    next()
   }
-})
-
-const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
-  routes,
 })
 
 export default router
