@@ -72,10 +72,9 @@ onMounted(async () => {
     const res = await fetch(`${API_URL}/chat`, {
       headers: {
         'Content-Type': 'application/json',
-        Authorization: token,
+        Authorization: `Bearer ${token}`,
       },
     })
-    console.log('fetch response:', res)
 
     if (!res.ok) {
       window.location.href = '/login'
