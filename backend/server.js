@@ -114,18 +114,29 @@ io.on("connection", async (socket) => {
 
   // 隨機一對一配對
   socket.on("find random chat", () => {
-    if (waitingQueue.length > 0) {
-      const partnerSocket = waitingQueue.shift();
-      const roomId = `private_${socket.id}_${partnerSocket.id}`;
+    // 找等待隊列中不是自己（userId 不同）的對象
+    const partnerIndex = waitingQueue.findIndex(
+      (s) => s.data.userId !== socket.data.userId
+    );
+
+    if (partnerIndex !== -1) {
+      const partnerSocket = waitingQueue.splice(partnerIndex, 1)[0];
+      const roomId = `private_${socket.data.userId}_${partnerSocket.data.userId}`;
 
       socket.join(roomId);
       partnerSocket.join(roomId);
 
       socket.emit("matched", { roomId });
       partnerSocket.emit("matched", { roomId });
+
+      console.log(
+        `配對成功: ${socket.data.userId} <-> ${partnerSocket.data.userId}`
+      );
     } else {
-      waitingQueue.push(socket);
+      // 如果沒有其他人，自己加入等待隊列（避免重複加入）
+      if (!waitingQueue.includes(socket)) waitingQueue.push(socket);
       socket.emit("waiting");
+      console.log(`等待配對: ${socket.data.userId}`);
     }
   });
 
