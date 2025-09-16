@@ -1,5 +1,4 @@
 const express = require("express");
-const helmet = require("helmet");
 const { createServer } = require("node:http");
 const { Server } = require("socket.io");
 const passport = require("passport");
@@ -17,7 +16,11 @@ const app = express();
 const server = createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
 
-app.use(helmet());
+app.use((req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  next();
+});
+
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
