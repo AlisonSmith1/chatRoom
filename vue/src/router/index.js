@@ -12,8 +12,20 @@ const routes = [
   {
     path: '/chat',
     component: Chat,
+    meta: { requiresAuth: true },
   },
 ]
+
+router.beforeEach((to, from, next) => {
+  const accountStr = localStorage.getItem('Account')
+  const token = accountStr ? JSON.parse(accountStr).token : null
+
+  if (to.meta.requiresAuth && !token) {
+    next('/login') // 沒 token 就導去登入
+  } else {
+    next() // 有 token 或不需要驗證就放行
+  }
+})
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
