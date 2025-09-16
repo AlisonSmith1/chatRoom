@@ -66,7 +66,6 @@ onMounted(async () => {
 
   if (!token) {
     window.location.href = '/login'
-    return
   }
 
   try {
