@@ -8,14 +8,19 @@
       <li v-for="(msg, index) in messages" :key="index">
         <strong>{{ msg.username }}:</strong> {{ msg.content }}
       </li>
+      <p v-if="props.typingUser">{{ props.typingUser }} 正在輸入...</p>
     </ul>
 
     <input
       v-model="message"
       @keyup.enter="$emit('send-message', message)"
+      @input="$emit('notifyTyping')"
+      @blur="$emit('stopTyping')"
       placeholder="輸入訊息..."
       :disabled="!roomId"
     />
+    <button @click="($emit('send-file'), file)" :disabled="!roomId">+</button>
+
     <button @click="$emit('send-message', message)" :disabled="!roomId">送出</button>
   </div>
 </template>
@@ -27,6 +32,7 @@ const props = defineProps({
   messages: Array,
   roomId: Number,
   isPrivate: Boolean,
+  typingUser: String,
 })
 
 const chatBox = ref(null)

@@ -11,7 +11,11 @@
       :messages="messages"
       :roomId="roomId"
       :isPrivate="isPrivate"
+      :typingUser="typingUser"
       @send-message="sendMessage"
+      @notifyTyping="notifyTyping"
+      @stopTyping="stopTyping"
+      @send-file="sendFile"
     />
   </div>
 </template>
@@ -27,6 +31,8 @@ const selectedRoom = ref(1)
 const messages = ref([])
 const roomId = ref(null)
 const isPrivate = ref(false)
+const typingUser = ref('')
+let typingTimeout = null
 let socket = null
 
 // 處理訊息
@@ -40,16 +46,19 @@ function joinRoom(id) {
   roomId.value = id
   messages.value = []
   socket.emit('join room', id)
+  isPrivate.value = false // 確保切回一般聊天室
 }
 
 // 送訊息
 function sendMessage(msg) {
-  console.log('準備送出的訊息：', msg, '房間ID：', roomId.value)
   if (!msg.trim() || !roomId.value) return
 
   const event = isPrivate.value ? 'private message' : 'chat message'
   socket.emit(event, { roomId: roomId.value, content: msg }, (ack) => {
-    if (ack?.status === 'ok') console.log(`${isPrivate.value ? '私訊' : '訊息'}送出成功`)
+    if (ack?.status === 'ok') {
+      console.log(`${isPrivate.value ? '私訊' : '訊息'}送出成功`)
+      message.value = '' // 清空輸入框
+    }
   })
 }
 
@@ -59,6 +68,16 @@ function findRandomChat() {
   messages.value = [{ username: '系統', content: '正在等待配對...' }]
   roomId.value = null
 }
+
+function notifyTyping() {
+  socket.emit('typing', roomId.value)
+}
+
+function stopTyping() {
+  socket.emit('stop typing', roomId.value)
+}
+
+function sendFile() {}
 
 onMounted(async () => {
   const accountStr = localStorage.getItem('Account')
@@ -104,10 +123,13 @@ onMounted(async () => {
 
       console.log('配對成功，房間ID:', privateRoomId)
     })
+    socket.on('typing', ({ username }) => {
+      typingUser.value = username
+    })
 
-    if (isPrivate.value) {
-      isPrivate.value = false
-    }
+    socket.on('stop typing', ({ username }) => {
+      if (typingUser.value === username) typingUser.value = ''
+    })
   } catch (err) {
     console.error(err)
     window.location.href = '/login'

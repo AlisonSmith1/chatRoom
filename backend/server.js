@@ -78,6 +78,20 @@ io.on("connection", async (socket) => {
     }
   });
 
+  // 使用者正在輸入
+  socket.on("typing", (roomId) => {
+    socket.to(roomId).emit("typing", {
+      username: socket.data.username,
+    });
+  });
+
+  // 使用者停止輸入
+  socket.on("stop typing", (roomId) => {
+    socket.to(roomId).emit("stop typing", {
+      username: socket.data.username,
+    });
+  });
+
   // 一般聊天室訊息
   socket.on("chat message", async ({ content, roomId }, callback) => {
     console.log(roomId);
