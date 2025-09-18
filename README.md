@@ -18,7 +18,10 @@
 4. 聊天頁
    - 建立 socket.io 連線
      - io("http://localhost:4000", { auth: { token: JWT } })
+   - 送出訊息
+   - 上傳圖片
    - 顯示訊息列表
+   - 一對一隨機配對
    - 送訊息給 server
      ────────────────────────────────────
 
@@ -45,7 +48,7 @@
 - users
   - id, username, password(hashed), (timestamp)
 - messages
-  - id, content, timestamp, room_id, user_id
+  - id, content, timestamp, room_id, user_id, file_url, file_type
 - chat_rooms
   - id, name, type, timestamp
 - room_members

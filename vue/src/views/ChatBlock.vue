@@ -77,7 +77,26 @@ function stopTyping() {
   socket.emit('stop typing', roomId.value)
 }
 
-function sendFile() {}
+async function sendFile(file) {
+  if (!roomId.value) return
+
+  const formData = new FormData()
+  formData.append('image', file)
+
+  const res = await fetch(`${API_URL}/upload`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('Account') ? JSON.parse(localStorage.getItem('Account')).token : ''}`,
+    },
+    body: formData,
+  })
+
+  const data = await res.json()
+  console.log('data', data)
+  const fileUrl = data.url
+
+  socket.emit('send file', { roomId: roomId.value, fileUrl, fileType: file.type })
+}
 
 onMounted(async () => {
   const accountStr = localStorage.getItem('Account')
@@ -129,6 +148,10 @@ onMounted(async () => {
 
     socket.on('stop typing', ({ username }) => {
       if (typingUser.value === username) typingUser.value = ''
+    })
+
+    socket.on('file message', (msg) => {
+      messages.value.push(msg)
     })
   } catch (err) {
     console.error(err)

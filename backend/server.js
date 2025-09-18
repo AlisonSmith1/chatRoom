@@ -12,6 +12,7 @@ const jwt = require("jsonwebtoken");
 const path = require("path");
 const usersRouter = require("./routes/users");
 const chatRoomRouter = require("./routes/chatRoom");
+const uploadRoute = require("./routes/upload");
 
 const app = express();
 const server = createServer(app);
@@ -27,6 +28,7 @@ app.use(
   passport.authenticate("jwt", { session: false }),
   chatRoomRouter
 );
+app.use("/upload", uploadRoute);
 
 app.use(express.static(path.join(__dirname, "../vue/dist")));
 
@@ -63,12 +65,17 @@ io.on("connection", async (socket) => {
 
     try {
       const result = await pool.query(
-        `SELECT m.id, u.username, m.content
-         FROM messages m
-         JOIN users u ON m.user_id = u.id
-         WHERE m.room_id = $1
-         ORDER BY m.id ASC
-         LIMIT 100`,
+        `SELECT 
+         m.id, 
+         u.username, 
+         m.content,
+         m.file_url,
+         m.file_type
+       FROM messages m
+       JOIN users u ON m.user_id = u.id
+       WHERE m.room_id = $1
+       ORDER BY m.id ASC
+       LIMIT 100`,
         [roomId]
       );
 
@@ -123,6 +130,28 @@ io.on("connection", async (socket) => {
       if (callback)
         callback({ status: "error", message: "訊息送出失敗，請稍後再試" });
       socket.emit("error message", { message: "訊息送出失敗，請稍後再試" });
+    }
+  });
+
+  socket.on("send file", async ({ roomId, fileUrl, fileType }) => {
+    try {
+      const result = await pool.query(
+        `WITH inserted AS (
+         INSERT INTO messages (user_id, content, room_id, file_url, file_type)
+         VALUES ($1, $2, $3, $4, $5)
+         RETURNING id, user_id, content, file_url, file_type
+       )
+       SELECT i.id, u.username, i.content, i.file_url, i.file_type
+       FROM inserted i
+       JOIN users u ON i.user_id = u.id;`,
+        [socket.data.userId, null, roomId, fileUrl, fileType]
+      );
+
+      const msg = result.rows[0];
+      console.log(msg);
+      io.to(roomId).emit("file message", msg);
+    } catch (e) {
+      console.error(e);
     }
   });
 
