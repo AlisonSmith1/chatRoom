@@ -23,8 +23,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/users", usersRouter);
+app.use("/chat", express.static(path.join(__dirname, "public/chat")));
 app.use(
-  "/chat",
+  "/api/chat",
   passport.authenticate("jwt", { session: false }),
   chatRoomRouter
 );
@@ -101,7 +102,6 @@ io.on("connection", async (socket) => {
 
   // 一般聊天室訊息
   socket.on("chat message", async ({ content, roomId }, callback) => {
-    console.log(roomId);
     try {
       await pool.query(
         `INSERT INTO chat_rooms (id, name)
@@ -148,7 +148,6 @@ io.on("connection", async (socket) => {
       );
 
       const msg = result.rows[0];
-      console.log(msg);
       io.to(roomId).emit("file message", msg);
     } catch (e) {
       console.error(e);

@@ -12,7 +12,7 @@ const routes = [
   {
     path: '/chat',
     component: Chat,
-    meta: { requiresAuth: true },
+    // meta: { requiresAuth: true },
   },
 ]
 
@@ -21,15 +21,15 @@ const router = createRouter({
   routes,
 })
 
-router.beforeEach((to, from, next) => {
-  const accountStr = localStorage.getItem('Account')
-  const token = accountStr ? JSON.parse(accountStr).token : null
+// router.beforeEach((to, from, next) => {
+//   const accountStr = localStorage.getItem('Account')
+//   const token = accountStr ? JSON.parse(accountStr).token : null
 
-  if (to.meta.requiresAuth && !token) {
-    next('/login')
-  } else {
-    next()
-  }
-})
+//   if (to.meta.requiresAuth && !token) {
+//     next('/login')
+//   } else {
+//     next()
+//   }
+// })
 
 export default router

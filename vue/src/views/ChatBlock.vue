@@ -92,7 +92,6 @@ async function sendFile(file) {
   })
 
   const data = await res.json()
-  console.log('data', data)
   const fileUrl = data.url
 
   socket.emit('send file', { roomId: roomId.value, fileUrl, fileType: file.type })
@@ -128,7 +127,6 @@ onMounted(async () => {
 
     socket.on('chat history', (history) => {
       messages.value = history
-      console.log('歷史訊息載入完成')
     })
     socket.on('waiting', () => {
       messages.value = [{ username: '系統', content: '正在等待配對...' }]
