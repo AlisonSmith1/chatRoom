@@ -33,7 +33,7 @@
     <p v-if="props.typingUser">{{ props.typingUser }} 正在輸入...</p>
 
     <label>
-      上傳圖片
+      ＋
       <input type="file" @change="handleFileUpload" :disabled="!roomId" style="display: none" />
     </label>
 
@@ -100,6 +100,10 @@ watch(
   display: flex;
   flex-direction: column;
 }
+label {
+  cursor: pointer;
+}
+
 ul {
   list-style: none;
   padding: 0;
