@@ -3,7 +3,6 @@ const jwt = require("jsonwebtoken");
 function authenticateToken(req, res, next) {
   const authHeader = req.headers["authorization"];
   const token = authHeader?.split(" ")[1];
-  console.log("token:", token);
   if (!token) return res.status(401).json({ message: "未登入" });
 
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
