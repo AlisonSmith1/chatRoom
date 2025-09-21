@@ -81,7 +81,7 @@ function clearInput() {
   message.value = ''
 }
 
-onMounted(scrollToBottom())
+onMounted(scrollToBottom)
 
 watch(
   () => props.messages,
