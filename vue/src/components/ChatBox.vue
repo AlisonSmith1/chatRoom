@@ -51,7 +51,7 @@
 </template>
 
 <script setup>
-import { ref, nextTick, watch } from 'vue'
+import { ref, nextTick, watch, onMounted } from 'vue'
 
 const props = defineProps({
   messages: Array,
@@ -80,6 +80,8 @@ function scrollToBottom() {
 function clearInput() {
   message.value = ''
 }
+
+onMounted(scrollToBottom())
 
 watch(
   () => props.messages,
