@@ -107,7 +107,7 @@ onMounted(async () => {
   }
 
   try {
-    const res = await fetch(`${API_URL}/chat`, {
+    const res = await fetch(`${API_URL}/api/chat`, {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
