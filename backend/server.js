@@ -23,9 +23,8 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/users", usersRouter);
-app.use("/chat", express.static(path.join(__dirname, "../vue/dist")));
 app.use(
-  "/api/chat",
+  "/chat",
   passport.authenticate("jwt", { session: false }),
   chatRoomRouter
 );
