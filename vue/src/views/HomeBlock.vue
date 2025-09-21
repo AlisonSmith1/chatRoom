@@ -7,9 +7,9 @@
     <table>
       <thead>
         <tr>
-          <th style="width: 150px">組別</th>
-          <th style="width: 150px">帳號</th>
-          <th style="width: 150px">密碼</th>
+          <th>組別</th>
+          <th>帳號</th>
+          <th>密碼</th>
         </tr>
       </thead>
       <tbody>
@@ -71,6 +71,7 @@ td {
 }
 
 th {
+  width: 150px;
   background-color: #3bd48f;
 }
 

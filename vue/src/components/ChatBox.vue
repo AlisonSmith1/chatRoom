@@ -10,8 +10,8 @@
         <span v-if="msg.content">{{ msg.content }}</span>
 
         <!-- 如果有圖片就顯示圖片 -->
-        <div v-if="msg.file_url" style="margin-top: 5px">
-          <img :src="msg.file_url" alt="圖片" style="max-width: 200px; border-radius: 5px" />
+        <div v-if="msg.file_url" class="msg_file">
+          <img :src="msg.file_url" alt="圖片" class="msg_file_src" />
         </div>
         <!-- 判斷條件：只要 msg.file_url 有值就會顯示圖片
 不管檔案類型，可能是圖片、影片、PDF 都會被 <img> 嘗試渲染
@@ -34,7 +34,7 @@
 
     <label>
       上傳圖片
-      <input type="file" @change="handleFileUpload" :disabled="!roomId" style="display: none" />
+      <input type="file" @change="handleFileUpload" :disabled="!roomId" class="file" />
     </label>
 
     <input
@@ -119,6 +119,20 @@ input {
   padding: 5px;
   margin-bottom: 5px;
 }
+
+.file {
+  display: none;
+}
+
+.msg_file {
+  margin-top: 5px;
+}
+
+.msg_file_src {
+  max-width: 200px;
+  border-radius: 5px;
+}
+
 button {
   padding: 5px;
   margin-bottom: 5px;
