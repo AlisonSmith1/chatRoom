@@ -10,21 +10,21 @@
         <span v-if="msg.content">{{ msg.content }}</span>
 
         <!-- 如果有圖片就顯示圖片 -->
-        <div v-if="msg.file_url" style="margin-top: 5px">
+        <!-- <div v-if="msg.file_url" style="margin-top: 5px">
           <img :src="msg.file_url" alt="圖片" style="max-width: 200px; border-radius: 5px" />
-        </div>
+        </div> -->
         <!-- 判斷條件：只要 msg.file_url 有值就會顯示圖片
 不管檔案類型，可能是圖片、影片、PDF 都會被 <img> 嘗試渲染
 優點：簡單快速
 缺點：如果 file_url 不是圖片，瀏覽器會顯示破圖 -->
 
         <!-- 如果是圖片 -->
-        <!-- <img
-            v-if="msg.file_url && msg.file_type?.startsWith('image/')"
-            :src="msg.file_url"
-            alt="uploaded image"
-            style="max-width: 200px; display: block; margin-top: 5px"
-          /> -->
+        <img
+          v-if="msg.file_url && msg.file_type?.startsWith('image/')"
+          :src="msg.file_url"
+          alt="uploaded image"
+          style="max-width: 200px; display: block; margin-top: 5px"
+        />
         <!-- 判斷條件：只有 msg.file_url 存在 且檔案類型是圖片 (msg.file_type 以 "image/" 開頭)
 更安全，不會把 PDF、影片當圖片渲染
 缺點：如果後端沒傳 file_type，就會無法顯示圖片 -->
