@@ -18,7 +18,16 @@ const app = express();
 const server = createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
 
-app.use(helmet());
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'"],
+      styleSrc: ["'self'", "https:"],
+      imgSrc: ["'self'", "data:", "https://res.cloudinary.com"],
+    },
+  })
+);
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
