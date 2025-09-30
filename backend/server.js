@@ -38,6 +38,11 @@ app.use(
   passport.authenticate("jwt", { session: false }),
   chatRoomRouter
 );
+// 點擊按鈕切換到 /chat
+// 點擊按鈕 → SPA 前端渲染 → fetch 發送 → 後端驗證 → 成功
+// F5 刷新頁面
+// 刷新頁面 → 瀏覽器整頁請求 → 後端直接回 HTML → JWT 沒帶 → 401 → SPA 還沒開始 → fetch 還沒發
+// fetch 只有在元件 mount 後才發送，而刷新頁面前端元件還沒 mount → fetch 還沒跑
 app.use("/upload", uploadRoute);
 
 app.use(express.static(path.join(__dirname, "../vue/dist")));

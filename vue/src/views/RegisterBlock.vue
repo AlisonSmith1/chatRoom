@@ -46,7 +46,6 @@ async function register() {
       return
     }
     if (res.ok) {
-      userStore.login(data)
       router.push('/')
       alert('註冊成功！')
     } else {
